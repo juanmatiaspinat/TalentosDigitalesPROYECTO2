@@ -9,8 +9,7 @@ class LibrosController {
 
     async getOne(req, res) {
         const libro = req.body;
-        const [resultado] = await pool.query(`SELECT FROM libros WHERE id=(?)`, [libro.id]);
-        //res.json(resultado);
+        const [resultado] = await pool.query(`SELECT * FROM libros WHERE id=(?)`, [libro.id]);
         res.json(resultado);
     }
 
