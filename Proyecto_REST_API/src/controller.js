@@ -4,15 +4,27 @@ class LibrosController {
 
     // Traer-Obtener todos los libros 
     async getAll(req, res) {
-        const [resultado] = await pool.query('SELECT * FROM libros');
-        res.json(resultado);
+        try {
+            const [resultado] = await pool.query('SELECT * FROM libros');
+            res.json(resultado);
+        } catch (error) {
+            res.status(500).json({ "Error": "Error al intentar obtener los libros." });
+        }
     }
 
     // Traer-Obtener libro por ID 
     async getOne(req, res) {
-        const libro = req.body;
-        const [resultado] = await pool.query(`SELECT * FROM libros WHERE id=(?)`, [libro.id]);
-        res.json(resultado);
+        try {
+            const libro = req.body;
+            const [resultado] = await pool.query(`SELECT * FROM libros WHERE id=(?)`, [libro.id]);
+            if (resultado.length > 0) {
+                res.json(resultado[0]);
+            } else {
+            res.status(400).json({ "Error": "No se encontro ningun libro con ese ID." });
+            }
+        } catch (error) {
+            res.status(500).json({ "Error": "Error al intentar obtener el libro por ID." });
+        }
     }
 
     // Agregar un libro 
@@ -22,7 +34,7 @@ class LibrosController {
             const [resultado] = await pool.query(`INSERT INTO libros(nombre, autor, categoria, año_publicacion, ISBN) VALUES (?, ?, ?, ?, ?)`, [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN]);
             res.json({ "ID insertado": resultado.insertId });
         } catch (error) {
-            res.status(500).json({ "error": "Error al intentar agregar el libro." });
+            res.status(500).json({ "Error": "Error al intentar agregar el libro." });
         }
 
     }
@@ -53,7 +65,7 @@ class LibrosController {
                 res.status(404).json({ "Error": "No se encontro ningun libro con ese ISBN" });
             }
         } catch (error) {
-            res.status(500).json({ "error": "Error al intentar actualizar el libro." });
+            res.status(500).json({ "Error": "Error al intentar actualizar el libro." });
         }
     }
 
